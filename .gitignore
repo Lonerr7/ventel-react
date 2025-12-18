@@ -1,0 +1,15 @@
+*.jpg
+*.png
+.idea/
+.vscode/
+.qodo
+node_modules/
+dist/
+**font**/
+**fonts**/
+**vendor/
+temp/
+public/js
+public/css
+**/composer.bat
+.htaccess

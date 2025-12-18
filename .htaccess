@@ -1,0 +1,38 @@
+# Закрыть доступ всем
+# deny from all
+
+Options +FollowSymLinks
+RewriteEngine on
+RewriteBase /
+# Добавить слэш в конце, нужно только для public (надо убрать/переименовать эту папку)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !\..+$
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteCond %{REQUEST_URI} ^(.+)$
+RewriteRule ^(.*)$ /$1/ [L,R=301]
+# Попадание в файл
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /index.php?targetPage=$1 [L,QSA]
+
+#php_value session.gc_maxlifetime 86400
+#php_value session.cookie_lifetime 0
+
+# Запрет ко всем файлам
+<FilesMatch "\.(php)$">
+	Deny from all
+</FilesMatch>
+
+# Разрешить 1 файл
+<FilesMatch "^index.(php)$">
+	Allow from all
+</FilesMatch>
+
+# Разрешить 1 файл
+<FilesMatch "^outside.(php)$">
+	Allow from all
+</FilesMatch>
+
+# Для dev servera
+#<IfModule mod_headers.c>
+#    Header set Access-Control-Allow-Origin "*"
+#</IfModule>

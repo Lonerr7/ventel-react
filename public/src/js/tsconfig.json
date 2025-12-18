@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true, // нельзя использовать переменные без явного указания типа
+    "module": "ESNext",
+    "target": "ES2015",
+    "jsx": "react-jsx",
+    "allowJs": true, // не только ts, но и js
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["./src/*"]
+    },
+    "esModuleInterop": true, // import вместо require
+    "allowSyntheticDefaultImports": true, // дефолтный импорт
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "strict": true,
+      "module": "CommonJS"
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".**/*.js",
+    "**/*.jsx",
+    "*.ts",
+    "*.js"
+  ]
+}
