@@ -19,20 +19,79 @@ $field = $field ?? [
   'jsLinks'  => [],
 ];
 
-/*// Прайс
-$param = [
-  'id'    => 'id-product',
-  'name'  => 'Наименование',
-  'mName' => 'Материал',
-  'unit'  => 'Ед. изм.',
-  'value' => ['Стоимость, руб.', 'float'],
-];
+function scanCsvDirectory(string $rootPath): array
+{
+  $result = [];
 
-$price = loadCSV($param, 'price.csv');
+  foreach (array_diff(scandir($rootPath), ['.', '..']) as $path) {
+    $path = $rootPath . DIRECTORY_SEPARATOR . $path;
+    if (is_dir($path)) {
+      $result = array_merge($result, scanCsvDirectory($path));
+      continue;
+    }
 
-$price = json_encode(array_filter($price, function ($i) {
-  return boolval(strlen($i['id']));
-}));*/
+    $result[] = $path;
+  }
+
+  return $result;
+}
+
+function commonLoadCsv(&$data, $param, $file, bool $strict = false)
+{
+  $csv = loadCSV($param, $file, $strict);
+  $csv = array_filter($csv, function ($row) {
+    return strlen($row['id']);
+  });
+  $data = array_merge($data, $csv);
+}
+
+if (isset($_GET['load-data'])) {
+  $queryData = [];
+
+  // Изображения
+  $data = [];
+  $param = [
+    'id' => 'id',
+    'path' => 'path'
+  ];
+  commonLoadCsv($data, $param, 'z_config/z_images/images.csv');
+  $queryData['images'] = $data;
+
+  // Прайсы
+  $data = [];
+  $param = [
+    'manufacturer' => 'manufacturer',
+    'id' => 'id',
+    'name' => 'name',
+    'type' => 'type',
+    'price' => 'price',
+    'image' => 'image',
+    'doc1' => 'doc1',
+    'doc2' => 'doc2',
+    'doc3' => 'doc3'
+  ];
+
+  $pricesPath = $main->getCmsParam(('csvPath')) . 'prices';
+  $prices = [];
+
+  foreach (scanCsvDirectory($pricesPath) as $path) {
+    if (pathinfo($path, PATHINFO_EXTENSION) !== 'csv') {
+      continue;
+    }
+
+    $prices[] = $path;
+  }
+
+  foreach ($prices as $price) {
+    commonLoadCsv($data, $param, $price);
+  }
+
+  $queryData['prices'] = $data;
+
+  // Отправляем ответ на фронтенд
+  $main->response->setContent($queryData)->send();
+  die();
+}
 
 
 $field['cssLinks'][] = $publicCss . 'style.css?ver=55261cc5db';

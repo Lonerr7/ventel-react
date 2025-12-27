@@ -1,9 +1,9 @@
-const path = require('path'),
-  webpack = require('webpack'),
-  { VueLoaderPlugin } = require('vue-loader');
+const path = require("path"),
+  webpack = require("webpack"),
+  { VueLoaderPlugin } = require("vue-loader");
 
-const HtmlWebpackPlugin = require('html-webpack-plugin'),
-  MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin"),
+  MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 /**
  * Шрифты
@@ -18,10 +18,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin'),
  */
 const getOutputPath = () => {
   const outputPath =
-    '../../' +
-    (path.basename(path.resolve(__dirname, '../../')) !== 'public'
-      ? 'public/'
-      : '');
+    "../../" +
+    (path.basename(path.resolve(__dirname, "../../")) !== "public"
+      ? "public/"
+      : "");
   return path.resolve(__dirname, outputPath);
 };
 
@@ -29,11 +29,11 @@ module.exports = (env) => {
   const dev = !env.production;
 
   return {
-    mode: dev ? 'development' : 'production',
+    mode: dev ? "development" : "production",
     watch: dev, // слежка за изменениями файлов
     watchOptions: { aggregateTimeout: 300 }, // задержка оценки изменений в мс
     entry: {
-      calculator: './js/calculator.tsx', //function: './js/function.js',
+      calculator: "./js/calculator.tsx", //function: './js/function.js',
     },
 
     experiments: {
@@ -42,19 +42,30 @@ module.exports = (env) => {
 
     output: {
       path: getOutputPath(),
-      publicPath: '/',
-      filename: 'js/[name].js',
+      publicPath: "/",
+      filename: "js/[name].js",
       // assetModuleFilename: 'public/',
       // chunkFilename: 'js/[name].chunk.js',
-      scriptType: 'module',
+      scriptType: "module",
       module: true,
-      libraryTarget: 'module',
+      libraryTarget: "module",
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".js", ".jsx"]
+      extensions: [".ts", ".tsx", ".js", ".jsx"],
+      alias: {
+        // Корень проекта
+        "@": path.resolve(__dirname, "../js/"),
+        // Алиасы для FSD слоев
+        "@app": path.resolve(__dirname, "../js/app"),
+        "@shared": path.resolve(__dirname, "../js/shared"),
+        "@entities": path.resolve(__dirname, "../entities"),
+        "@features": path.resolve(__dirname, "../js/features"),
+        "@widgets": path.resolve(__dirname, "../js/widgets"),
+        "@pages": path.resolve(__dirname, "../js/pages"),
+      },
     },
 
-    devtool: dev ? 'source-map' : false, //source mapping
+    devtool: dev ? "source-map" : false, //source mapping
     optimization: {
       minimize: !dev,
 
@@ -62,7 +73,7 @@ module.exports = (env) => {
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: 'css/style.css',
+        filename: "css/style.css",
       }),
       // new VueLoaderPlugin(),
 
@@ -70,16 +81,16 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         /*title: 'title',
         filename: 'view/index.html',*/
-        template: 'template/index.html',
+        template: "template/index.html",
       }),
 
       new webpack.DefinePlugin({
-        BUILD_TIME: new Date().toLocaleString().replace(', ', '-'),
+        BUILD_TIME: new Date().toLocaleString().replace(", ", "-"),
 
         /** Глобальные для Vue */
         // Drop Options API from bundle
-        __VUE_OPTIONS_API__: 'true',
-        __VUE_PROD_DEVTOOLS__: 'false',
+        __VUE_OPTIONS_API__: "true",
+        __VUE_PROD_DEVTOOLS__: "false",
         __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
       }),
     ],
@@ -98,7 +109,7 @@ module.exports = (env) => {
 
     devServer: {
       static: {
-        directory: path.join(__dirname, '/'),
+        directory: path.join(__dirname, "/"),
       },
       port: 3000,
       hot: false,
@@ -117,7 +128,7 @@ module.exports = (env) => {
 const getMiniCssExtractPlugin = () => ({
   loader: MiniCssExtractPlugin.loader,
   options: {
-    publicPath: '../',
+    publicPath: "../",
   },
 });
 
@@ -126,10 +137,10 @@ const getMiniCssExtractPlugin = () => ({
  * @return {object}
  */
 const getCssLoader = () => ({
-  loader: 'css-loader',
+  loader: "css-loader",
   options: {
     url: {
-      filter: (l) => !l.includes('/font'),
+      filter: (l) => !l.includes("/font"),
     },
     sourceMap: true,
   },
@@ -142,16 +153,16 @@ const getReactRules = () => ({
   test: /\.(js|jsx|ts|tsx)$/,
   exclude: /node_modules/,
   use: {
-    loader: 'babel-loader',
+    loader: "babel-loader",
     options: {
-      presets: ['@babel/preset-env', '@babel/preset-react']
-    }
-  }
+      presets: ["@babel/preset-env", "@babel/preset-react"],
+    },
+  },
 });
 
 const getTypeScriptRules = () => ({
   test: /\.(ts|tsx)$/,
-  loader: 'ts-loader',
+  loader: "ts-loader",
   exclude: /node_modules/,
 });
 
@@ -160,7 +171,7 @@ const getTypeScriptRules = () => ({
  */
 const getVueRules = () => ({
   test: /\.vue$/,
-  loader: 'vue-loader',
+  loader: "vue-loader",
 });
 
 /**
@@ -171,9 +182,9 @@ const getScssRules = () => ({
   use: [
     getMiniCssExtractPlugin(),
     getCssLoader(),
-    'resolve-url-loader',
+    "resolve-url-loader",
     {
-      loader: 'sass-loader',
+      loader: "sass-loader",
       options: {
         sourceMap: true, // <-- !!IMPORTANT!!
       },
@@ -200,9 +211,9 @@ const getCssRules = () => ({
  */
 const getImageRules = () => ({
   test: /\.(png|jpe?g|gif|webp)$/i,
-  type: 'asset',
+  type: "asset",
   generator: {
-    filename: 'image/[name][ext]',
+    filename: "image/[name][ext]",
   },
   parser: {
     dataUrlCondition: {
@@ -216,9 +227,9 @@ const getImageRules = () => ({
  */
 const getSVGRules = () => ({
   test: /\.(svg)$/,
-  type: 'asset',
+  type: "asset",
   generator: {
-    filename: 'svg/[name][ext]',
+    filename: "svg/[name][ext]",
   },
   parser: {
     dataUrlCondition: {
@@ -232,8 +243,8 @@ const getSVGRules = () => ({
  */
 const getFontsRules = () => ({
   test: /\.(ttf|woff|woff2|eot)$/,
-  type: 'asset/resource',
+  type: "asset/resource",
   generator: {
-    filename: 'fonts/[name][ext]',
+    filename: "fonts/[name][ext]",
   },
 });
